@@ -17,4 +17,5 @@ public class Gif {
     @Id
     private UUID id;
     private String name;
+    private String url;
 }
