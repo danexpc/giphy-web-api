@@ -9,5 +9,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Gif {
     private final UUID id;
-    private final String keyWord;
+    private final String name;
 }
