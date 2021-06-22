@@ -75,14 +75,28 @@ public class HttpGifsApiClient implements GifsApiClient {
     }
 
     private void downloadGif(Gif gif) {
-        try (InputStream in = new URL(prepareUrl(gif.getId())).openStream()) {
-            Files.copy(in, new File(pathToCache + gif.getPath()).toPath());
+        try (InputStream in = new URL(prepareUrlForDownloading(gif.getId())).openStream()) {
+            var file = preparePathForSaving(pathToCache, gif.getName(), gif.getPath());
+            Files.copy(in, file.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String prepareUrl(String id) {
+    private File preparePathForSaving(String pathToCache, String folderName, String filename) {
+        var dir = new File(pathToCache + folderName);
+        createDirectoryIfDoesntExist(dir);
+        var file = new File(dir.getPath() + "/" + filename);
+        return file;
+    }
+
+    private void createDirectoryIfDoesntExist(File file) {
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
+
+    private String prepareUrlForDownloading(String id) {
         return gifsApiDownloadUrl.replace("{id}", id);
     }
 
