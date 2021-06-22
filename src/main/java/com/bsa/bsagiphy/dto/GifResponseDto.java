@@ -1,7 +1,6 @@
 package com.bsa.bsagiphy.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 @Getter
