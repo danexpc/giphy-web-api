@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class GifResponseDto {
-    private final String url;
+    private final String path;
 }

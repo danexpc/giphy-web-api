@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class GifDto {
     private final String name;
-    private final String url;
+    private final String path;
 }

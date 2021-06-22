@@ -12,7 +12,7 @@ public class GifToDtoMapper implements Mapper<GifResponseDto, Gif> {
     @Override
     public GifResponseDto map(Gif entity) {
         return new GifResponseDto(
-                entity.getUrl()
+                entity.getPath()
         );
     }
 
