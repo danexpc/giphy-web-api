@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SearchGifResponseDto {
-    private final String name;
-    private final String pathToGif;
+public class GifResponseDto {
+    private final String url;
 }
