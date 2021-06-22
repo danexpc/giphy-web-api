@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GenerateGifRequestDto {
+public class GifRequestDto {
     private final String userId;
     private final String gifName;
 }
