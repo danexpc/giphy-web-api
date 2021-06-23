@@ -13,12 +13,13 @@ import java.util.Optional;
 public class CacheOperationService {
 
     private final DiskStorageRepository repository;
-    private final GifOperationService service;
+
+    @Autowired
+    private HttpGifsApiClient httpGifsApiClient;
 
     @Autowired
     public CacheOperationService(DiskStorageRepository repository, GifOperationService service) {
         this.repository = repository;
-        this.service = service;
     }
 
     public Optional<Cache> getCacheByQuery(String query) {
@@ -30,7 +31,7 @@ public class CacheOperationService {
     }
 
     public Optional<Cache> createGifInCache(GenerateCacheRequestDto dto) {
-        service.get(dto.query);
+        httpGifsApiClient.getGif(dto.query);
         return getCacheByQuery(dto.query);
     }
 
