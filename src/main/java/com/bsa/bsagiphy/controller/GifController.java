@@ -1,9 +1,6 @@
 package com.bsa.bsagiphy.controller;
 
-import com.bsa.bsagiphy.dto.GifResponseDto;
-import com.bsa.bsagiphy.mapper.GifMapper;
 import com.bsa.bsagiphy.service.impl.GifOperationService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +15,6 @@ import java.util.List;
 public class GifController {
 
     private final GifOperationService service;
-    private final GifMapper mapper = Mappers.getMapper(GifMapper.class);
 
     @Autowired
     public GifController(GifOperationService service) {
@@ -26,8 +22,8 @@ public class GifController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GifResponseDto>> getAllGifs() {
+    public ResponseEntity<List<String>> getAllGifs() {
         var gifs = service.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(mapper.listGifToListGifDto(gifs));
+        return ResponseEntity.status(HttpStatus.OK).body(gifs);
     }
 }
