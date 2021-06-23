@@ -35,18 +35,9 @@ public class DiskStorageRepository implements GifRepository {
     private String fileExtension;
 
     public List<Cache> getCache() {
-        List<Cache> cache = new ArrayList<>();
         var file = new File(pathToCache);
 
-        var dirs = file.listFiles();
-        if (dirs != null) {
-            for (var d : dirs) {
-                var paths = Arrays.stream(Objects.requireNonNull(d.listFiles())).map(File::getPath).collect(Collectors.toList());
-                cache.add(new Cache(d.getName(), paths));
-            }
-        }
-
-        return cache;
+        return getCacheFromDir(file);
     }
 
     public Optional<Cache> getCacheByQuery(String query) {
@@ -76,7 +67,14 @@ public class DiskStorageRepository implements GifRepository {
                         file.getPath())).collect(Collectors.toList());
     }
 
-    public Optional<Gif> getGifByQuery(String query, String userId) {
+    public List<Cache> getCacheByUserId(String userId) {
+
+        var dir = new File(pathToUsersStorage + userId);
+
+        return getCacheFromDir(dir);
+    }
+
+    public Optional<Gif> getFileByQuery(String userId, String query) {
         var sourceDir = Path.of(pathToCache + query);
         Optional<File> maybeFile = getRandomFileFromDirectory(sourceDir);
         maybeFile.ifPresent(file -> OperationsWithFileSystem.copyFile(file,
@@ -103,6 +101,18 @@ public class DiskStorageRepository implements GifRepository {
         return todayDate + "," + query + "," + gif.getPath();
     }
 
+    private List<Cache> getCacheFromDir(File dir) {
+        List<Cache> cache = new ArrayList<>();
+        var dirs = dir.listFiles();
 
+        if (dirs != null) {
+            for (var d : dirs) {
+                var paths = Arrays.stream(Objects.requireNonNull(d.listFiles())).map(File::getPath).collect(Collectors.toList());
+                cache.add(new Cache(d.getName(), paths));
+            }
+        }
+
+        return cache;
+    }
 
 }
