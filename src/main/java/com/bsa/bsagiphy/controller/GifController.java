@@ -1,10 +1,9 @@
 package com.bsa.bsagiphy.controller;
 
 import com.bsa.bsagiphy.dto.GifResponseDto;
-import com.bsa.bsagiphy.entity.Gif;
-import com.bsa.bsagiphy.mapper.GifToDtoMapper;
-import com.bsa.bsagiphy.mapper.Mapper;
+import com.bsa.bsagiphy.mapper.GifMapper;
 import com.bsa.bsagiphy.service.impl.GifOperationService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +17,17 @@ import java.util.List;
 @RequestMapping("/gifs")
 public class GifController {
 
-    private final GifOperationService gifOperationService;
-    private final Mapper<GifResponseDto, Gif> mapper;
+    private final GifOperationService service;
+    private final GifMapper mapper = Mappers.getMapper(GifMapper.class);
 
     @Autowired
-    public GifController(GifOperationService gifOperationService, GifToDtoMapper mapper) {
-        this.gifOperationService = gifOperationService;
-        this.mapper = mapper;
+    public GifController(GifOperationService service) {
+        this.service = service;
     }
 
     @GetMapping
     public ResponseEntity<List<GifResponseDto>> getAllGifs() {
-        var gifs = gifOperationService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(mapper.mapCollection(gifs));
+        var gifs = service.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(mapper.listGifToListGifDto(gifs));
     }
 }
