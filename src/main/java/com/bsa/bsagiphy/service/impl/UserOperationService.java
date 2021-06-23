@@ -28,8 +28,8 @@ public class UserOperationService {
         return storageRepository.getHistoryByUserId(userId);
     }
 
-    public void cleanHistoryByUserId(String id) {
-        // todo
+    public void cleanHistoryByUserId(String userId) {
+        storageRepository.deleteHistoryByUserId(userId);
     }
 
     public Gif searchGifByQuery(String id, String query, Boolean force) {

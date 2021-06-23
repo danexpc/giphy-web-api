@@ -110,6 +110,10 @@ public class DiskStorageRepository implements GifRepository {
         }
     }
 
+    public void deleteHistoryByUserId(String userId) {
+        deleteFileContent(pathToUsersStorage + userId + File.separator + historyFileName);
+    }
+
     private String buildNewHistoryRecord(String query, Gif gif) {
         var dtf = DateTimeFormatter.ofPattern("MM-dd-yyyy");
         String todayDate = LocalDate.now().format(dtf);
@@ -143,5 +147,4 @@ public class DiskStorageRepository implements GifRepository {
 
         return cache;
     }
-
 }
