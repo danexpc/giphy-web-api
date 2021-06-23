@@ -10,5 +10,5 @@ import java.util.List;
 @Setter
 public class CacheDto {
     private String query;
-    private List<Gif> gifs;
+    private List<String> gifs;
 }

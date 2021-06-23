@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class Cache {
     private String query;
-    private List<Gif> gifs;
+    private List<String> gifs;
 }
