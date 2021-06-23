@@ -37,7 +37,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}search/")
-    public GifResponseDto searchGif(@PathVariable String id, @RequestParam Map<String, String> params) {
+    public GifResponseDto searchGif(@PathVariable String id,
+                                    @RequestParam(required = false) String query,
+                                    @RequestParam(defaultValue = "false") Boolean force) {
         // todo
         return null;
     }
