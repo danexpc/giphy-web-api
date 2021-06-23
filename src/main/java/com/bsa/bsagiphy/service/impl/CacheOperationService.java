@@ -35,6 +35,6 @@ public class CacheOperationService {
     }
 
     public void deleteCache() {
-        // todo
+        repository.deleteCache();
     }
 }
