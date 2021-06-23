@@ -78,11 +78,8 @@ public class DiskStorageRepository implements GifRepository {
     }
 
     public Optional<Gif> getFileByQuery(String userId, String query) {
-        var sourceDir = Path.of(pathToCache + query);
+        var sourceDir = Path.of(pathToUsersStorage + userId + File.separator + query);
         Optional<File> maybeFile = getRandomFileFromDirectory(sourceDir);
-        maybeFile.ifPresent(file -> OperationsWithFileSystem.copyFile(file,
-                new File(pathToUsersStorage + userId + File.separator + file.getName())));
-
         if (maybeFile.isPresent()) {
             var file = maybeFile.get();
             return Optional.of(new Gif(file.getName(), file.getName(), file.getPath()));
