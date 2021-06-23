@@ -1,21 +1,24 @@
 package com.bsa.bsagiphy.util;
 
+import com.bsa.bsagiphy.entity.Cache;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.apache.catalina.startup.ExpandWar.deleteDir;
 
 public class OperationsWithFileSystem {
 
     private static final Random random = new Random();
 
-    private OperationsWithFileSystem() {}
+    private OperationsWithFileSystem() {
+    }
 
     public static void copyFile(File source, File destination) {
         try (InputStream in = destination.toURI().toURL().openStream()) {
@@ -52,23 +55,36 @@ public class OperationsWithFileSystem {
         var contents = dir.listFiles();
         for (File content : Objects.requireNonNull(contents)) {
             try {
-                deleteDir(content);
+                deleteDirRecursively(content);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static void deleteDir(File file) throws IOException {
+    public static void deleteDirRecursively(File file) throws IOException {
         var contents = file.listFiles();
         if (contents != null) {
             for (File f : contents) {
-                if (! Files.isSymbolicLink(f.toPath())) {
-                    deleteDir(f);
+                if (!Files.isSymbolicLink(f.toPath())) {
+                    deleteDirRecursively(f);
                 }
             }
         }
         Files.delete(file.toPath());
+    }
+
+    public static List<File> getAllFilesInDir(File dir) {
+        var dirs = dir.listFiles();
+        var files = new ArrayList<File>();
+
+        if (dirs != null) {
+            for (var d : dirs) {
+                files.addAll(Arrays.stream(Objects.requireNonNull(d.listFiles())).collect(Collectors.toList()));
+            }
+        }
+
+        return files;
     }
 
 }
