@@ -1,5 +1,6 @@
 package com.bsa.bsagiphy.repository.impl;
 
+import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.repository.GifRepository;
 import com.bsa.bsagiphy.util.OperationsWithFileSystem;
@@ -13,7 +14,8 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.bsa.bsagiphy.util.OperationsWithFileSystem.getRandomFileFromDirectory;
 
@@ -28,6 +30,35 @@ public class DiskStorageRepository implements GifRepository {
 
     @Value("${resources.location.users.history-file-name}")
     private String historyFileName;
+
+    public List<Cache> getCache() {
+        List<Cache> cache = new ArrayList<>();
+        var file = new File(pathToCache);
+
+        var dirs = file.listFiles();
+        if (dirs != null) {
+            for (var d : dirs) {
+                var paths = Arrays.stream(Objects.requireNonNull(d.listFiles())).map(File::getPath).collect(Collectors.toList());
+                cache.add(new Cache(d.getName(), paths));
+            }
+        }
+
+        return cache;
+    }
+
+    public Optional<Cache> getCacheByQuery(String query) {
+        var file = new File(pathToCache);
+
+        var maybeDir = Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(
+                dir -> dir.getName().equals(query)).findFirst();
+        if (maybeDir.isPresent()) {
+            var paths = Arrays.stream(
+                    Objects.requireNonNull(maybeDir.get().listFiles())).map(File::getPath).collect(Collectors.toList());
+            return Optional.of(new Cache(maybeDir.get().getName(), paths));
+        }
+
+        return Optional.empty();
+    }
 
     public Optional<Gif> getGifByQuery(String query, String userId) {
         var sourceDir = Path.of(pathToCache + query);
