@@ -8,9 +8,13 @@ import com.bsa.bsagiphy.mapper.UserCacheMapper;
 import com.bsa.bsagiphy.service.impl.UserOperationService;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -40,11 +44,19 @@ public class UserController {
         service.cleanHistoryByUserId(id);
     }
 
-    @GetMapping("/{id}/search/")
-    public GifResponseDto searchGif(@PathVariable String id,
+    @GetMapping("/{id}/search")
+    public String searchGif(@PathVariable String id,
                                     @RequestParam String query,
-                                    @RequestParam(defaultValue = "false") Boolean force) {
-        return mapper.gifToGifResponseDto(service.searchGifByQuery(id, query, force));
+                                    @RequestParam(defaultValue = "false") boolean force) {
+        try {
+            return force ? service.searchGifInDiskStorageByQuery(id, query).getPath()
+                            : service.searchGifInCacheMemoryByQuery(id, query).getPath();
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "entity not found"
+            );
+        }
+
     }
 
     @PostMapping("/{id}/generate")

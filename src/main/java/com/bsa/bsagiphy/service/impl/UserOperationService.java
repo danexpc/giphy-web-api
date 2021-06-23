@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserOperationService {
@@ -32,9 +33,20 @@ public class UserOperationService {
         storageRepository.deleteHistoryByUserId(userId);
     }
 
-    public Gif searchGifByQuery(String id, String query, Boolean force) {
-        // todo
-        return null;
+    public Gif searchGifInDiskStorageByQuery(String userId, String query) {
+        var maybeGif = storageRepository.getFileByQuery(userId, query);
+        maybeGif.ifPresent(gif -> memoryRepository.updateCache(userId, query, gif));
+
+        if (maybeGif.isPresent())
+            return maybeGif.get();
+
+        throw new NoSuchElementException();
+    }
+
+    public Gif searchGifInCacheMemoryByQuery(String userId, String query) {
+        var maybeGif = memoryRepository.getFileByQuery(userId, query);
+
+        return maybeGif.orElseGet(() -> searchGifInDiskStorageByQuery(userId, query));
     }
 
     public Gif createGif(String id, GenerateGifForUserDto dto) {
