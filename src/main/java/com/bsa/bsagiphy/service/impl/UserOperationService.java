@@ -4,15 +4,24 @@ import com.bsa.bsagiphy.dto.GenerateGifForUserDto;
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.entity.UserHistory;
+import com.bsa.bsagiphy.repository.impl.CacheMemoryRepository;
+import com.bsa.bsagiphy.repository.impl.DiskStorageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserOperationService {
-    public List<Cache> getAllPersonalFilesByUserId(String id) {
-        // todo
-        return null;
+
+    @Autowired
+    private DiskStorageRepository storageRepository;
+
+    @Autowired
+    private CacheMemoryRepository memoryRepository;
+
+    public List<Cache> getAllPersonalFilesByUserId(String userId) {
+        return storageRepository.getCacheByUserId(userId);
     }
 
     public UserHistory getHistoryByUserId(String id) {

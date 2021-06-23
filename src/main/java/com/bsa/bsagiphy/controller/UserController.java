@@ -27,6 +27,7 @@ public class UserController {
 
     @GetMapping("/{id}/all")
     public List<CacheDto> getAllFiles(@PathVariable String id) {
+        System.out.println(id);
         return mapper.listCacheToListCacheDto(service.getAllPersonalFilesByUserId(id));
     }
 
