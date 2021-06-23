@@ -27,13 +27,12 @@ public class UserController {
 
     @GetMapping("/{id}/all")
     public List<CacheDto> getAllFiles(@PathVariable String id) {
-        System.out.println(id);
         return mapper.listCacheToListCacheDto(service.getAllPersonalFilesByUserId(id));
     }
 
     @GetMapping("/{id}/history")
-    public UserHistoryDto getHistory(@PathVariable String id) {
-        return mapper.userHistoryToUserHistoryDto(service.getHistoryByUserId(id));
+    public List<UserHistoryDto> getHistory(@PathVariable String id) {
+        return mapper.listUserHistoryToListUserHistoryDto(service.getHistoryByUserId(id));
     }
 
     @DeleteMapping("/{id}/history/clean")

@@ -24,9 +24,8 @@ public class UserOperationService {
         return storageRepository.getCacheByUserId(userId);
     }
 
-    public UserHistory getHistoryByUserId(String id) {
-        // todo
-        return null;
+    public List<UserHistory> getHistoryByUserId(String userId) {
+        return storageRepository.getHistoryByUserId(userId);
     }
 
     public void cleanHistoryByUserId(String id) {
