@@ -1,12 +1,14 @@
 package com.bsa.bsagiphy.controller;
 
-import com.bsa.bsagiphy.dto.*;
+import com.bsa.bsagiphy.dto.CacheDto;
+import com.bsa.bsagiphy.dto.GenerateGifForUserDto;
+import com.bsa.bsagiphy.dto.GifResponseDto;
+import com.bsa.bsagiphy.dto.UserHistoryDto;
 import com.bsa.bsagiphy.service.UserOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
