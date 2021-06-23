@@ -4,7 +4,7 @@ import com.bsa.bsagiphy.dto.UserHistoryDto;
 import com.bsa.bsagiphy.entity.UserHistory;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserHistoryMapper {
 
     UserHistoryDto UserHistoryToUserHistoryDto(UserHistory entity);

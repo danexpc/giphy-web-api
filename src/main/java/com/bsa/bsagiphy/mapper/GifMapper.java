@@ -7,7 +7,7 @@ import com.bsa.bsagiphy.dto.GifResponseDto;
 import com.bsa.bsagiphy.entity.Gif;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface GifMapper {
 
     GifDto GifToGifDto(Gif entity);

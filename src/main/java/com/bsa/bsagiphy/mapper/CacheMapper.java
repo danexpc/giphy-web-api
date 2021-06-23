@@ -5,7 +5,7 @@ import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
 import com.bsa.bsagiphy.entity.Cache;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CacheMapper {
     Cache CacheDtoToCache(CacheDto dto);
 
