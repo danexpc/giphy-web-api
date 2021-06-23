@@ -2,17 +2,17 @@ package com.bsa.bsagiphy.repository.impl;
 
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
+import com.bsa.bsagiphy.entity.UserHistory;
 import com.bsa.bsagiphy.repository.GifRepository;
 import com.bsa.bsagiphy.util.OperationsWithFileSystem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,8 +28,11 @@ public class DiskStorageRepository implements GifRepository {
     @Value("${resources.location.users}")
     private String pathToUsersStorage;
 
-    @Value("${resources.location.users.history-file-name}")
+    @Value("${resources.location.users.history.filename}")
     private String historyFileName;
+
+    @Value("${resources.location.users.history.separator}")
+    private String historyRecordSeparator;
 
     @Value("${resources.file-extension}")
     private String fileExtension;
@@ -88,6 +91,18 @@ public class DiskStorageRepository implements GifRepository {
         return Optional.empty();
     }
 
+    public List<UserHistory> getHistoryByUserId(String userId) {
+        List<UserHistory> histories = new ArrayList<>();
+        try (var reader = new Scanner(new File(pathToUsersStorage + userId + File.separator + historyFileName))) {
+            while (reader.hasNextLine()) {
+                histories.add(parseHistoryRecord(reader.nextLine()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return histories;
+    }
+
     public void updateHistory(String userId, String query, Gif gif) throws IOException {
         try (var fileWriter = new FileWriter(pathToUsersStorage + userId + File.separator + historyFileName);
              var printWriter = new PrintWriter(fileWriter)) {
@@ -98,7 +113,21 @@ public class DiskStorageRepository implements GifRepository {
     private String buildNewHistoryRecord(String query, Gif gif) {
         var dtf = DateTimeFormatter.ofPattern("MM-dd-yyyy");
         String todayDate = LocalDate.now().format(dtf);
-        return todayDate + "," + query + "," + gif.getPath();
+        return todayDate + historyRecordSeparator + query + historyRecordSeparator + gif.getPath();
+    }
+
+    private UserHistory parseHistoryRecord(String historyRecord) {
+        var fields = historyRecord.split(historyRecordSeparator);
+        var formatter = new SimpleDateFormat("MM-dd-yyyy");
+        var date = new Date();
+
+        try {
+            date = formatter.parse(fields[0]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new UserHistory(date, fields[1], fields[2]);
     }
 
     private List<Cache> getCacheFromDir(File dir) {
