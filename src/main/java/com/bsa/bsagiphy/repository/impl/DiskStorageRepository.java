@@ -11,12 +11,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.bsa.bsagiphy.util.OperationsWithFileSystem.deleteAllContentInDir;
 import static com.bsa.bsagiphy.util.OperationsWithFileSystem.getRandomFileFromDirectory;
 
 @Repository
@@ -58,6 +60,10 @@ public class DiskStorageRepository implements GifRepository {
         }
 
         return Optional.empty();
+    }
+
+    public void deleteCache() {
+        deleteAllContentInDir(new File(pathToCache));
     }
 
     public Optional<Gif> getGifByQuery(String query, String userId) {
