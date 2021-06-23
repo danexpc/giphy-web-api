@@ -7,16 +7,22 @@ import com.bsa.bsagiphy.dto.GifResponseDto;
 import com.bsa.bsagiphy.entity.Gif;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface GifMapper {
 
-    GifDto GifToGifDto(Gif entity);
+    GifDto gifToGifDto(Gif entity);
 
-    Gif GifDtoToGif(GifDto dto);
+    Gif gifDtoToGif(GifDto dto);
 
-    Gif GifRequestDtoToGif(GifRequestDto dto);
+    Gif gifRequestDtoToGif(GifRequestDto dto);
 
-    GifResponseDto GifToGifResponseDto(Gif entity);
+    GifResponseDto gifToGifResponseDto(Gif entity);
 
-    Gif GenerateGifForUserDtoToGif(GenerateGifForUserDto dto);
+    Gif generateGifForUserDtoToGif(GenerateGifForUserDto dto);
+
+    List<GifResponseDto> listGifToListGifDto(List<Gif> entities);
+
+    List<Gif> listGifDtoToListGif(List<GifDto> dtos);
 }

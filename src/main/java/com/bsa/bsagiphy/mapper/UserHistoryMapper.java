@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UserHistoryMapper {
 
-    UserHistoryDto UserHistoryToUserHistoryDto(UserHistory entity);
+    UserHistoryDto userHistoryToUserHistoryDto(UserHistory entity);
 
-    UserHistory UserHistoryDtoToUserHistory(UserHistoryDto dto);
+    UserHistory userHistoryDtoToUserHistory(UserHistoryDto dto);
 }
