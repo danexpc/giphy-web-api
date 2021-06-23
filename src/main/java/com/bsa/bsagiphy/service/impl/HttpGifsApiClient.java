@@ -1,6 +1,7 @@
-package com.bsa.bsagiphy.service;
+package com.bsa.bsagiphy.service.impl;
 
 import com.bsa.bsagiphy.entity.Gif;
+import com.bsa.bsagiphy.service.GifsApiClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

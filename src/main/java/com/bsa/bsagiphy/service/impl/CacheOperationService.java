@@ -1,4 +1,4 @@
-package com.bsa.bsagiphy.service;
+package com.bsa.bsagiphy.service.impl;
 
 import org.springframework.stereotype.Service;
 

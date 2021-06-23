@@ -4,7 +4,7 @@ import com.bsa.bsagiphy.dto.GifResponseDto;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.mapper.GifToDtoMapper;
 import com.bsa.bsagiphy.mapper.Mapper;
-import com.bsa.bsagiphy.service.GifOperationService;
+import com.bsa.bsagiphy.service.impl.GifOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

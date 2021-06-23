@@ -4,7 +4,7 @@ import com.bsa.bsagiphy.dto.CacheDto;
 import com.bsa.bsagiphy.dto.GenerateGifForUserDto;
 import com.bsa.bsagiphy.dto.GifResponseDto;
 import com.bsa.bsagiphy.dto.UserHistoryDto;
-import com.bsa.bsagiphy.service.UserOperationService;
+import com.bsa.bsagiphy.service.impl.UserOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

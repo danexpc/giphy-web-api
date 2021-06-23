@@ -1,4 +1,4 @@
-package com.bsa.bsagiphy.service;
+package com.bsa.bsagiphy.service.impl;
 
 import com.bsa.bsagiphy.entity.Gif;
 import org.springframework.beans.factory.annotation.Autowired;

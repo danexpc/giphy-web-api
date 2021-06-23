@@ -2,7 +2,7 @@ package com.bsa.bsagiphy.controller;
 
 import com.bsa.bsagiphy.dto.CacheDto;
 import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
-import com.bsa.bsagiphy.service.CacheOperationService;
+import com.bsa.bsagiphy.service.impl.CacheOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
