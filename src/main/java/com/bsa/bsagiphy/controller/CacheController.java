@@ -32,8 +32,8 @@ public class CacheController {
     }
 
     @PostMapping("/generate")
-    public CacheDto createCache(@RequestBody GenerateCacheRequestDto generateCacheRequestDto) {
-        return mapper.cacheToCacheDto(service.createGifInCache());
+    public CacheDto createCache(@RequestBody GenerateCacheRequestDto dto) {
+        return mapper.cacheToCacheDto(service.createGifInCache(dto).orElse(new Cache()));
     }
 
     @DeleteMapping

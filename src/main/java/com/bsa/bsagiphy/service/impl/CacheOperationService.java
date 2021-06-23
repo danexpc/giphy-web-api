@@ -1,7 +1,7 @@
 package com.bsa.bsagiphy.service.impl;
 
+import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
 import com.bsa.bsagiphy.entity.Cache;
-import com.bsa.bsagiphy.repository.GifRepository;
 import com.bsa.bsagiphy.repository.impl.DiskStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,12 @@ import java.util.Optional;
 public class CacheOperationService {
 
     private final DiskStorageRepository repository;
+    private final GifOperationService service;
 
     @Autowired
-    public CacheOperationService(DiskStorageRepository repository) {
+    public CacheOperationService(DiskStorageRepository repository, GifOperationService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     public Optional<Cache> getCacheByQuery(String query) {
@@ -27,9 +29,9 @@ public class CacheOperationService {
         return repository.getCache();
     }
 
-    public Cache createGifInCache() {
-        // todo
-        return null;
+    public Optional<Cache> createGifInCache(GenerateCacheRequestDto dto) {
+        service.get(dto.query);
+        return getCacheByQuery(dto.query);
     }
 
     public void deleteCache() {
