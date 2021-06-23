@@ -11,15 +11,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.bsa.bsagiphy.util.OperationsWithFileSystem.deleteAllContentInDir;
-import static com.bsa.bsagiphy.util.OperationsWithFileSystem.getRandomFileFromDirectory;
+import static com.bsa.bsagiphy.util.OperationsWithFileSystem.*;
 
 @Repository
 public class DiskStorageRepository implements GifRepository {
@@ -32,6 +30,9 @@ public class DiskStorageRepository implements GifRepository {
 
     @Value("${resources.location.users.history-file-name}")
     private String historyFileName;
+
+    @Value("${resources.file-extension}")
+    private String fileExtension;
 
     public List<Cache> getCache() {
         List<Cache> cache = new ArrayList<>();
@@ -66,6 +67,15 @@ public class DiskStorageRepository implements GifRepository {
         deleteAllContentInDir(new File(pathToCache));
     }
 
+    public List<Gif> getFiles() {
+        var files = getAllFilesInDir(new File(pathToCache));
+
+        return files.stream().map(file ->
+                new Gif(file.getName().replace(fileExtension, ""),
+                        file.getName().replace(fileExtension, ""),
+                        file.getPath())).collect(Collectors.toList());
+    }
+
     public Optional<Gif> getGifByQuery(String query, String userId) {
         var sourceDir = Path.of(pathToCache + query);
         Optional<File> maybeFile = getRandomFileFromDirectory(sourceDir);
@@ -92,6 +102,7 @@ public class DiskStorageRepository implements GifRepository {
         String todayDate = LocalDate.now().format(dtf);
         return todayDate + "," + query + "," + gif.getPath();
     }
+
 
 
 }
