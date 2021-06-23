@@ -2,6 +2,7 @@ package com.bsa.bsagiphy.controller;
 
 import com.bsa.bsagiphy.dto.CacheDto;
 import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
+import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.mapper.CacheMapper;
 import com.bsa.bsagiphy.service.impl.CacheOperationService;
 import org.mapstruct.factory.Mappers;
@@ -26,7 +27,7 @@ public class CacheController {
     @GetMapping
     public List<CacheDto> queryCacheCollection(@RequestParam(required = false) Optional<String> query) {
         return query.map(q ->
-                List.of(mapper.cacheToCacheDto(service.getCacheByQuery(q))))
+                List.of(mapper.cacheToCacheDto(service.getCacheByQuery(q).orElse(new Cache()))))
                 .orElseGet(() -> mapper.listCacheToListCacheDto(service.getAllCache()));
     }
 
