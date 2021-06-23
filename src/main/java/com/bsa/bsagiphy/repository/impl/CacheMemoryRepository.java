@@ -18,7 +18,7 @@ public class CacheMemoryRepository implements GifRepository {
         if (maybeCache.isPresent()) {
             var oldCache = maybeCache.get();
             var gifs = oldCache.getGifs();
-            gifs.add(gif);
+            gifs.add(gif.getPath());
             var newCache = new Cache(query, gifs);
             userCache.replaceAll(c -> {
                 if (Objects.equals(c.getQuery(), query)) {
@@ -28,8 +28,8 @@ public class CacheMemoryRepository implements GifRepository {
             });
             cache.put(userId, userCache);
         } else {
-            var gifs = new ArrayList<Gif>();
-            gifs.add(gif);
+            var gifs = new ArrayList<String>();
+            gifs.add(gif.getPath());
             userCache.add(new Cache(query, gifs));
         }
     }
