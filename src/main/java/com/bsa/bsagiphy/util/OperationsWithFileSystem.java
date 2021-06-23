@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -44,6 +46,29 @@ public class OperationsWithFileSystem {
 
         return false;
 
+    }
+
+    public static void deleteAllContentInDir(File dir) {
+        var contents = dir.listFiles();
+        for (File content : Objects.requireNonNull(contents)) {
+            try {
+                deleteDir(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void deleteDir(File file) throws IOException {
+        var contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (! Files.isSymbolicLink(f.toPath())) {
+                    deleteDir(f);
+                }
+            }
+        }
+        Files.delete(file.toPath());
     }
 
 }
