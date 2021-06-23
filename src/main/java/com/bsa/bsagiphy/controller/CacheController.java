@@ -10,12 +10,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cache")
-public class ApiCacheController {
+public class CacheController {
 
     private final CacheOperationService cacheOperationService;
 
     @Autowired
-    public ApiCacheController(CacheOperationService cacheOperationService) {
+    public CacheController(CacheOperationService cacheOperationService) {
         this.cacheOperationService = cacheOperationService;
     }
 

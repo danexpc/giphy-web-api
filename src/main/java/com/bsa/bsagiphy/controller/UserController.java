@@ -10,12 +10,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
-public class ApiUserController {
+public class UserController {
 
     private final UserOperationService userOperationService;
 
     @Autowired
-    public ApiUserController(UserOperationService userOperationService) {
+    public UserController(UserOperationService userOperationService) {
         this.userOperationService = userOperationService;
     }
 

@@ -16,13 +16,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gifs")
-public class ApiGifController {
+public class GifController {
 
     private final GifOperationService gifOperationService;
     private final Mapper<GifResponseDto, Gif> mapper;
 
     @Autowired
-    public ApiGifController(GifOperationService gifOperationService, GifToDtoMapper mapper) {
+    public GifController(GifOperationService gifOperationService, GifToDtoMapper mapper) {
         this.gifOperationService = gifOperationService;
         this.mapper = mapper;
     }

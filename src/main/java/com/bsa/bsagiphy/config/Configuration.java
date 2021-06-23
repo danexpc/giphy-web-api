@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 import java.net.http.HttpClient;
 
 @Configuration
-public class ApiConfiguration {
+public class Configuration {
 
     @Bean
     @Scope(value = "prototype")
