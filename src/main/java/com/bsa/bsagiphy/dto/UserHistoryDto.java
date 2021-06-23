@@ -1,14 +1,14 @@
 package com.bsa.bsagiphy.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class UserHistoryDto {
-    private final Date date;
-    private final String query;
-    private final String gif;
+    private Date date;
+    private String query;
+    private String gif;
 }

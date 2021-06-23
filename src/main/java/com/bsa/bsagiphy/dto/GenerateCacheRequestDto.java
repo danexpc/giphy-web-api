@@ -1,10 +1,10 @@
 package com.bsa.bsagiphy.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class GenerateCacheRequestDto {
-    public final String query;
+    public String query;
 }

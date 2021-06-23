@@ -1,11 +1,11 @@
 package com.bsa.bsagiphy.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class GifDto {
-    private final String name;
-    private final String path;
+    private String name;
+    private String path;
 }

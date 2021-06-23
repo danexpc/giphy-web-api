@@ -1,11 +1,11 @@
 package com.bsa.bsagiphy.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class GenerateGifForUserDto {
-    private final String query;
-    private final Boolean force;
+    private String query;
+    private Boolean force;
 }
