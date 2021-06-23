@@ -2,9 +2,7 @@ package com.bsa.bsagiphy.util;
 
 import com.bsa.bsagiphy.entity.Cache;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -85,6 +83,14 @@ public class OperationsWithFileSystem {
         }
 
         return files;
+    }
+
+    public static void deleteFileContent(String filePath) {
+        try {
+            new PrintWriter(filePath).close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
