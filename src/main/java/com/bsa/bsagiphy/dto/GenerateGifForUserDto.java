@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class GenerateGifForUserDto {
     private String query;
-    private Boolean force;
+    private boolean force;
 }

@@ -1,6 +1,5 @@
 package com.bsa.bsagiphy.dto;
 
-import com.bsa.bsagiphy.entity.Gif;
 import lombok.Getter;
 import lombok.Setter;
 
