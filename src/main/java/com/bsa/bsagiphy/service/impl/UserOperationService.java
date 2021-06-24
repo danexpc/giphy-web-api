@@ -83,7 +83,8 @@ public class UserOperationService {
         memoryRepository.deleteCache(userId);
     }
 
-    public void cleanAllUserData(String id) {
-        // todo
+    public void cleanAllUserData(String userId) {
+        memoryRepository.deleteCache(userId);
+        storageRepository.deleteUserStorage(userId);
     }
 }
