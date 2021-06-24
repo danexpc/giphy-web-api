@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -156,7 +157,6 @@ public class DiskStorageRepository implements GifRepository {
 
         return cache;
     }
-//    copyFile(file.get(), new File(pathToUsersStorage + userId + File.separator + query));
 
     public Optional<Gif> getFileFromStorage(String query) {
         var file = getRandomFileFromDirectory(Path.of(pathToCache + query));
@@ -165,5 +165,13 @@ public class DiskStorageRepository implements GifRepository {
                 value.getName().replace(fileExtension, ""),
                 value.getPath()));
 
+    }
+
+    public void deleteUserStorage(String userId) {
+        try {
+            FileUtils.deleteDirectory(Paths.get(pathToUsersStorage, userId).toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
