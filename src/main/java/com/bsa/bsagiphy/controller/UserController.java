@@ -9,7 +9,6 @@ import com.bsa.bsagiphy.service.impl.UserOperationService;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -49,7 +48,7 @@ public class UserController {
                                     @RequestParam String query,
                                     @RequestParam(defaultValue = "false") boolean force) {
         try {
-            return force ? service.searchGifInDiskStorageByQuery(id, query).getPath()
+            return force ? service.searchFileInDiskStorageByQuery(id, query).getPath()
                             : service.searchGifInCacheMemoryByQuery(id, query).getPath();
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(
@@ -60,8 +59,8 @@ public class UserController {
     }
 
     @PostMapping("/{id}/generate")
-    public GifResponseDto createGifForUser(@PathVariable String id, @RequestBody GenerateGifForUserDto dto) {
-        return mapper.gifToGifResponseDto(service.createGif(id, dto));
+    public String createGifForUser(@PathVariable String id, @RequestBody GenerateGifForUserDto dto) {
+        return service.createGif(id, dto);
     }
 
     @DeleteMapping("/{id}/reset")

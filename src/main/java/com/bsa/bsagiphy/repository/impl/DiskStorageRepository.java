@@ -4,21 +4,26 @@ import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.entity.UserHistory;
 import com.bsa.bsagiphy.repository.GifRepository;
-import com.bsa.bsagiphy.util.OperationsWithFileSystem;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bsa.bsagiphy.util.OperationsWithFileSystem.*;
 
+@Log4j2
 @Repository
 public class DiskStorageRepository implements GifRepository {
 
@@ -88,6 +93,13 @@ public class DiskStorageRepository implements GifRepository {
         return Optional.empty();
     }
 
+    public Gif saveFileToUserStorage(String userId, String query, Gif gif) throws IOException {
+        var newPath = Path.of(pathToUsersStorage, userId, query, gif.getId() + fileExtension).toString();
+        log.error(newPath);
+        FileUtils.copyFile(new File(gif.getPath()), new File(newPath));
+        return new Gif(gif.getId(), gif.getName(), newPath);
+    }
+
     public List<UserHistory> getHistoryByUserId(String userId) {
         List<UserHistory> histories = new ArrayList<>();
         try (var reader = new Scanner(new File(pathToUsersStorage + userId + File.separator + historyFileName))) {
@@ -143,5 +155,15 @@ public class DiskStorageRepository implements GifRepository {
         }
 
         return cache;
+    }
+//    copyFile(file.get(), new File(pathToUsersStorage + userId + File.separator + query));
+
+    public Optional<Gif> getFileFromStorage(String query) {
+        var file = getRandomFileFromDirectory(Path.of(pathToCache + query));
+        return file.map(value -> new Gif(
+                value.getName().replace(fileExtension, ""),
+                value.getName().replace(fileExtension, ""),
+                value.getPath()));
+
     }
 }

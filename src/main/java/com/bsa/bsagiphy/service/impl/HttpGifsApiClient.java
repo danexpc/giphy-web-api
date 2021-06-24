@@ -3,6 +3,8 @@ package com.bsa.bsagiphy.service.impl;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.service.GifsApiClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,8 +17,9 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
+import java.nio.file.Paths;
 
+@Log4j2
 @Component
 public class HttpGifsApiClient implements GifsApiClient {
 
@@ -32,6 +35,9 @@ public class HttpGifsApiClient implements GifsApiClient {
     @Value("${resources.location.cache}")
     private String pathToCache;
 
+    @Value("${resources.file-extension}")
+    private String fileExtension;
+
     private final HttpClient client;
 
     @Autowired
@@ -45,12 +51,12 @@ public class HttpGifsApiClient implements GifsApiClient {
             var response = client.send(buildGetRequest(buildURI(query)), HttpResponse.BodyHandlers.ofString());
 
             var objectMapper = new ObjectMapper();
-            var type = objectMapper.readTree(response.body()).at("/data/type").toString().replace("\"", "");
             var id = objectMapper.readTree(response.body()).at("/data/id").toString().replace("\"", "");
 
             var gif = new Gif(
-                    id, query, id + "." + type);
+                    id, query, Paths.get(pathToCache, query, id + fileExtension).toString());
 
+            log.error(gif.getPath());
             downloadGif(gif);
 
             return gif;
@@ -67,7 +73,7 @@ public class HttpGifsApiClient implements GifsApiClient {
 
     private URI buildURI(String query) {
         return URI.create(String.format(
-                "%s?api_key=%s&query=%s",
+                "%s?api_key=%s&tag=%s",
                 gifsApiUrl,
                 gifsApiKey,
                 query
@@ -75,24 +81,11 @@ public class HttpGifsApiClient implements GifsApiClient {
     }
 
     private void downloadGif(Gif gif) {
-        try (InputStream in = new URL(prepareUrlForDownloading(gif.getId())).openStream()) {
-            var file = preparePathForSaving(pathToCache, gif.getName(), gif.getPath());
-            Files.copy(in, file.toPath());
+        try (InputStream source = new URL(prepareUrlForDownloading(gif.getId())).openStream()) {
+            var dest = new File(gif.getPath());
+            FileUtils.copyInputStreamToFile(source, dest);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private File preparePathForSaving(String pathToCache, String folderName, String filename) {
-        var dir = new File(pathToCache + folderName);
-        createDirectoryIfDoesntExist(dir);
-        var file = new File(dir.getPath() + "/" + filename);
-        return file;
-    }
-
-    private void createDirectoryIfDoesntExist(File file) {
-        if (!file.exists()) {
-            file.mkdir();
         }
     }
 
