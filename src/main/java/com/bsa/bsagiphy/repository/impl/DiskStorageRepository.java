@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -20,8 +23,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.bsa.bsagiphy.util.OperationsWithFileSystem.*;
 
 @Log4j2
 @Repository
@@ -118,7 +119,12 @@ public class DiskStorageRepository implements GifRepository {
     }
 
     public void deleteHistoryByUserId(String userId) {
-        deleteFileContent(pathToUsersStorage + userId + File.separator + historyFileName);
+        try {
+            deleteFileContent(pathToUsersStorage + userId + File.separator + historyFileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private String buildNewHistoryRecord(String query, Gif gif) {
@@ -173,5 +179,45 @@ public class DiskStorageRepository implements GifRepository {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void deleteFileContent(String filename) throws FileNotFoundException {
+        new PrintWriter(filename).close();
+    }
+
+    private List<File> getAllFilesInDir(File dir) {
+        var dirs = dir.listFiles();
+        var files = new ArrayList<File>();
+
+        if (dirs != null) {
+            for (var d : dirs) {
+                files.addAll(Arrays.stream(Objects.requireNonNull(d.listFiles())).collect(Collectors.toList()));
+            }
+        }
+
+        return files;
+    }
+
+    public void deleteAllContentInDir(File dir) {
+        var dirs = dir.listFiles();
+        if (dirs != null) {
+            for (File file : dirs) {
+                try {
+                    FileUtils.delete(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public Optional<File> getRandomFileFromDirectory(Path path) {
+        if (Files.isDirectory(path)) {
+            File[] files = path.toFile().listFiles();
+            if (files != null) {
+                return Optional.of(files[new Random().nextInt(files.length)]);
+            }
+        }
+        return Optional.empty();
     }
 }
