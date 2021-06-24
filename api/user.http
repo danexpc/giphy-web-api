@@ -1,0 +1,39 @@
+DELETE http://localhost:5050/user/dan/clean
+X-BSA-GIPHY: 123
+
+###
+
+DELETE http://localhost:5050/user/dan/reset
+X-BSA-GIPHY: 123
+
+###
+
+POST http://localhost:5050/user/dan/generate
+Content-Type: application/json
+X-BSA-GIPHY: 123
+
+{
+"query": "cat",
+  "force": false
+}
+
+###
+
+GET http://localhost:5050/user/dan/search?query=cat
+X-BSA-GIPHY: 123
+
+###
+
+DELETE http://localhost:5050/user/dan/history/clean
+X-BSA-GIPHY: 123
+
+###
+
+GET http://localhost:5050/user/dan/history
+X-BSA-GIPHY: 123
+
+
+###
+
+GET http://localhost:5050/user/dan/all
+X-BSA-GIPHY: 123
