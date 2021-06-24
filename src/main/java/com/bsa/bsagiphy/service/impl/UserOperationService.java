@@ -75,12 +75,12 @@ public class UserOperationService {
         return gif.getPath();
     }
 
-    public void resetUserCacheByQuery(String id, String query) {
-        // todo
+    public void resetUserCacheByQuery(String userId, String query) {
+        memoryRepository.deleteCacheByQuery(userId, query);
     }
 
-    public void resetAllUserCache(String id) {
-        // todo
+    public void resetAllUserCache(String userId) {
+        memoryRepository.deleteCache(userId);
     }
 
     public void cleanAllUserData(String id) {
