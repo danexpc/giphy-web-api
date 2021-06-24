@@ -1,9 +1,9 @@
 package com.bsa.bsagiphy.exception;
 
-public final class ResourceCannotBeReachedException extends RuntimeException {
+public final class UnavailableResourceException extends RuntimeException {
     private static final String DEFAULT_MSG = "Resource is not accessible";
 
-    public ResourceCannotBeReachedException(Throwable cause) {
+    public UnavailableResourceException(Throwable cause) {
         super(DEFAULT_MSG, cause);
     }
 }

@@ -4,7 +4,7 @@ import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.exception.EntityNotFoundException;
 import com.bsa.bsagiphy.exception.InvalidArgumentException;
-import com.bsa.bsagiphy.exception.ResourceCannotBeReachedException;
+import com.bsa.bsagiphy.exception.UnavailableResourceException;
 import com.bsa.bsagiphy.repository.DiskStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class CacheOperationService {
             httpGifsApiClient.getGif(dto.query);
             return getByQuery(dto.query);
         } catch (RuntimeException e) {
-            throw new ResourceCannotBeReachedException(e);
+            throw new UnavailableResourceException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class CacheOperationService {
         try {
             repository.deleteCache();
         } catch (RuntimeException e) {
-            throw new ResourceCannotBeReachedException(e);
+            throw new UnavailableResourceException(e);
         }
     }
 }
