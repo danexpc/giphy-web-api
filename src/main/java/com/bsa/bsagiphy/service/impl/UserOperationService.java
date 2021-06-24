@@ -60,6 +60,7 @@ public class UserOperationService {
         if (dto.getForce()) {
             var gif = apiClient.getGif(dto.getQuery());
             memoryRepository.updateCache(userId, dto.getQuery(), gif);
+            storageRepository.updateHistory(userId, dto.getQuery(), gif);
             return gif.getPath();
         }
 
@@ -72,6 +73,7 @@ public class UserOperationService {
             gif = storageRepository.saveFileToUserStorage(userId, dto.getQuery(), gif);
         }
         memoryRepository.updateCache(userId, dto.getQuery(), gif);
+        storageRepository.updateHistory(userId, dto.getQuery(), gif);
         return gif.getPath();
     }
 
