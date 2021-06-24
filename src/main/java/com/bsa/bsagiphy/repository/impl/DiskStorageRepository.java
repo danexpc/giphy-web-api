@@ -144,11 +144,14 @@ public class DiskStorageRepository implements GifRepository {
     private List<Cache> getCacheFromDir(File dir) {
         List<Cache> cache = new ArrayList<>();
         var dirs = dir.listFiles();
-
         if (dirs != null) {
             for (var d : dirs) {
-                var paths = Arrays.stream(Objects.requireNonNull(d.listFiles())).map(File::getPath).collect(Collectors.toList());
-                cache.add(new Cache(d.getName(), paths));
+                if (d.isDirectory()) {
+                    var paths = Arrays.stream(Objects.requireNonNull(d.listFiles()))
+                            .map(File::getPath).collect(Collectors.toList());
+
+                    cache.add(new Cache(d.getName(), paths));
+                }
             }
         }
 
