@@ -75,9 +75,9 @@ public class UserOperationService {
             storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif.orElseThrow());
             return gif.orElseThrow().getPath();
         } catch (IOException e) {
-            throw new InvalidArgumentException(e.getMessage());
+            throw new InvalidArgumentException(e.getMessage(), e);
         } catch (NoSuchElementException e) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(e);
         }
 
     }
@@ -86,7 +86,7 @@ public class UserOperationService {
         try {
             memoryRepository.deleteCacheByQuery(userId, query);
         } catch (IllegalArgumentException e) {
-            throw new InvalidArgumentException(e.getMessage());
+            throw new InvalidArgumentException(e.getMessage(), e);
         }
     }
 
@@ -94,7 +94,7 @@ public class UserOperationService {
         try {
             memoryRepository.deleteCache(userId);
         } catch (IllegalArgumentException e) {
-            throw new InvalidArgumentException("userId argument is invalid");
+            throw new InvalidArgumentException("userId argument is invalid", e);
         }
     }
 
@@ -103,7 +103,7 @@ public class UserOperationService {
             memoryRepository.deleteCache(userId);
             storageRepository.deleteUserStorage(userId);
         } catch (IllegalArgumentException e) {
-            throw new InvalidArgumentException("userId argument is invalid");
+            throw new InvalidArgumentException("userId argument is invalid", e);
         }
 
     }

@@ -29,9 +29,9 @@ public class CacheOperationService {
         try {
             return repository.getCacheByQuery(query).orElseThrow();
         } catch (NoSuchElementException e) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(e);
         } catch (IllegalArgumentException e) {
-            throw new InvalidArgumentException("Query argument is invalid");
+            throw new InvalidArgumentException("Query argument is invalid", e);
         }
     }
 
@@ -44,7 +44,7 @@ public class CacheOperationService {
             httpGifsApiClient.getGif(dto.query);
             return getByQuery(dto.query);
         } catch (RuntimeException e) {
-            throw new ResourceCannotBeReachedException();
+            throw new ResourceCannotBeReachedException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class CacheOperationService {
         try {
             repository.deleteCache();
         } catch (RuntimeException e) {
-            throw new ResourceCannotBeReachedException();
+            throw new ResourceCannotBeReachedException(e);
         }
     }
 }
