@@ -2,11 +2,15 @@ package com.bsa.bsagiphy.service.impl;
 
 import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
 import com.bsa.bsagiphy.entity.Cache;
+import com.bsa.bsagiphy.exception.EntityNotFoundException;
+import com.bsa.bsagiphy.exception.InvalidArgumentException;
+import com.bsa.bsagiphy.exception.ResourceCannotBeReachedException;
 import com.bsa.bsagiphy.repository.DiskStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CacheOperationService {
@@ -22,7 +26,13 @@ public class CacheOperationService {
     }
 
     public Cache getByQuery(String query) {
-        return repository.getCacheByQuery(query).orElseThrow();
+        try {
+            return repository.getCacheByQuery(query).orElseThrow();
+        } catch (NoSuchElementException ex) {
+            throw new EntityNotFoundException();
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidArgumentException("Query argument is invalid");
+        }
     }
 
     public List<Cache> getAll() {
@@ -30,11 +40,19 @@ public class CacheOperationService {
     }
 
     public Cache createGif(GenerateCacheRequestDto dto) {
-        httpGifsApiClient.getGif(dto.query);
-        return getByQuery(dto.query);
+        try {
+            httpGifsApiClient.getGif(dto.query);
+            return getByQuery(dto.query);
+        } catch (RuntimeException ex) {
+            throw new ResourceCannotBeReachedException();
+        }
     }
 
     public void deleteCache() {
-        repository.deleteCache();
+        try {
+            repository.deleteCache();
+        } catch (RuntimeException ex) {
+            throw new ResourceCannotBeReachedException();
+        }
     }
 }

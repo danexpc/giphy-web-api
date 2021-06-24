@@ -4,13 +4,16 @@ import com.bsa.bsagiphy.dto.GenerateGifForUserDto;
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.entity.UserHistory;
+import com.bsa.bsagiphy.exception.EntityNotFoundException;
+import com.bsa.bsagiphy.exception.InvalidArgumentException;
 import com.bsa.bsagiphy.repository.CacheMemoryRepository;
 import com.bsa.bsagiphy.repository.DiskStorageRepository;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -50,39 +53,58 @@ public class UserOperationService {
         return maybeGif.orElseGet(() -> getGifInStorageByQuery(userId, query));
     }
 
-    @SneakyThrows
     public String createGif(String userId, GenerateGifForUserDto dto) {
-        if (dto.getForce()) {
-            var gif = apiClient.getGif(dto.getQuery());
+        try {
+            if (dto.getForce()) {
+                var gif = apiClient.getGif(dto.getQuery());
 
-            memoryRepository.updateCache(userId, dto.getQuery(), gif);
-            storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif);
-            return gif.getPath();
+                memoryRepository.updateCache(userId, dto.getQuery(), gif);
+                storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif);
+                return gif.getPath();
+            }
+
+            var maybeGif = storageRepository.getGifFromStorageByQuery(dto.getQuery());
+            Optional<Gif> gif;
+            if (maybeGif.isPresent()) {
+                gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), maybeGif.get());
+            } else {
+                gif = Optional.ofNullable(apiClient.getGif(dto.getQuery()));
+                gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), gif.orElseThrow());
+            }
+            memoryRepository.updateCache(userId, dto.getQuery(), gif.orElseThrow());
+            storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif.orElseThrow());
+            return gif.orElseThrow().getPath();
+        } catch (IOException e) {
+            throw new InvalidArgumentException(e.getMessage());
+        } catch (NoSuchElementException e) {
+            throw new EntityNotFoundException();
         }
 
-        var maybeGif = storageRepository.getGifFromStorageByQuery(dto.getQuery());
-        Optional<Gif> gif;
-        if (maybeGif.isPresent()) {
-            gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), maybeGif.get());
-        } else {
-            gif = Optional.ofNullable(apiClient.getGif(dto.getQuery()));
-            gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), gif.orElseThrow());
-        }
-        memoryRepository.updateCache(userId, dto.getQuery(), gif.orElseThrow());
-        storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif.orElseThrow());
-        return gif.orElseThrow().getPath();
     }
 
     public void resetCacheByQuery(String userId, String query) {
-        memoryRepository.deleteCacheByQuery(userId, query);
+        try {
+            memoryRepository.deleteCacheByQuery(userId, query);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidArgumentException(e.getMessage());
+        }
     }
 
     public void resetAllCache(String userId) {
-        memoryRepository.deleteCache(userId);
+        try {
+            memoryRepository.deleteCache(userId);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidArgumentException("userId argument is invalid");
+        }
     }
 
     public void deleteAllData(String userId) {
-        memoryRepository.deleteCache(userId);
-        storageRepository.deleteUserStorage(userId);
+        try {
+            memoryRepository.deleteCache(userId);
+            storageRepository.deleteUserStorage(userId);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidArgumentException("userId argument is invalid");
+        }
+
     }
 }
