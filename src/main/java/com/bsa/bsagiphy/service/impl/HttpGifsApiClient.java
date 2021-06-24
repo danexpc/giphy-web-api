@@ -2,8 +2,8 @@ package com.bsa.bsagiphy.service.impl;
 
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.service.GifsApiClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,14 +78,10 @@ public class HttpGifsApiClient implements GifsApiClient {
         ));
     }
 
+    @SneakyThrows
     private Gif parseResponseToGif(HttpResponse<String> response) {
         var objectMapper = new ObjectMapper();
-        String id = null;
-        try {
-            id = objectMapper.readTree(response.body()).at("/data/id").toString().replace("\"", "");
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String id = objectMapper.readTree(response.body()).at("/data/id").toString().replace("\"", "");
 
         var gif = new Gif();
         gif.setId(id);

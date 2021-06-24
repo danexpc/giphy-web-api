@@ -98,11 +98,11 @@ public class DiskStorageRepository {
                 value.getPath()));
     }
 
-    public Gif saveGifToUserStorage(String userId, String query, Gif gif) throws IOException {
+    public Optional<Gif> saveGifToUserStorage(String userId, String query, Gif gif) throws IOException {
         var newPath = Path.of(pathToUsersStorage, userId, query, gif.getId() + fileExtension).toString();
         log.error(newPath);
         FileUtils.copyFile(new File(gif.getPath()), new File(newPath));
-        return new Gif(gif.getId(), gif.getName(), newPath);
+        return Optional.of(new Gif(gif.getId(), gif.getName(), newPath));
     }
 
     @SneakyThrows

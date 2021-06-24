@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class UserOperationService {
@@ -41,10 +41,7 @@ public class UserOperationService {
         var maybeGif = storageRepository.getGifByQuery(userId, query);
         maybeGif.ifPresent(gif -> memoryRepository.updateCache(userId, query, gif));
 
-        if (maybeGif.isPresent())
-            return maybeGif.get();
-
-        throw new NoSuchElementException();
+        return maybeGif.orElseThrow();
     }
 
     public Gif getGifInCacheByQuery(String userId, String query) {
@@ -64,16 +61,16 @@ public class UserOperationService {
         }
 
         var maybeGif = storageRepository.getGifFromStorageByQuery(dto.getQuery());
-        Gif gif;
+        Optional<Gif> gif;
         if (maybeGif.isPresent()) {
             gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), maybeGif.get());
         } else {
-            gif = apiClient.getGif(dto.getQuery());
-            gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), gif);
+            gif = Optional.ofNullable(apiClient.getGif(dto.getQuery()));
+            gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), gif.orElseThrow());
         }
-        memoryRepository.updateCache(userId, dto.getQuery(), gif);
-        storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif);
-        return gif.getPath();
+        memoryRepository.updateCache(userId, dto.getQuery(), gif.orElseThrow());
+        storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif.orElseThrow());
+        return gif.orElseThrow().getPath();
     }
 
     public void resetCacheByQuery(String userId, String query) {
