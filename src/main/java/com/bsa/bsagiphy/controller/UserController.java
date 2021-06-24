@@ -39,17 +39,18 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/history/clean")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cleanHistory(@PathVariable String id) {
         service.deleteHistoryById(id);
     }
 
     @GetMapping("/{id}/search")
     public String searchGif(@PathVariable String id,
-                                    @RequestParam String query,
-                                    @RequestParam(defaultValue = "false") boolean force) {
+                            @RequestParam String query,
+                            @RequestParam(defaultValue = "false") boolean force) {
         try {
             return force ? service.getGifInStorageByQuery(id, query).getPath()
-                            : service.getGifInCacheByQuery(id, query).getPath();
+                    : service.getGifInCacheByQuery(id, query).getPath();
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "entity not found"
@@ -59,11 +60,13 @@ public class UserController {
     }
 
     @PostMapping("/{id}/generate")
+    @ResponseStatus(HttpStatus.CREATED)
     public String createGifForUser(@PathVariable String id, @RequestBody GenerateGifForUserDto dto) {
         return service.createGif(id, dto);
     }
 
     @DeleteMapping("/{id}/reset")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetUserCache(@PathVariable String id, @RequestParam Optional<String> query) {
         if (query.isPresent()) {
             service.resetCacheByQuery(id, query.get());
@@ -73,6 +76,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/clean")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cleanAllUserData(@PathVariable String id) {
         service.deleteAllData(id);
     }

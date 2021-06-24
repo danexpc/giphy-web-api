@@ -7,6 +7,7 @@ import com.bsa.bsagiphy.mapper.CacheMapper;
 import com.bsa.bsagiphy.service.impl.CacheOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,16 +29,18 @@ public class CacheController {
     @GetMapping
     public List<CacheDto> queryCacheCollection(@RequestParam(required = false) Optional<String> query) {
         return query.map(q ->
-                List.of(mapper.cacheToCacheDto(service.getByQuery(q).orElse(new Cache()))))
+                List.of(mapper.cacheToCacheDto(service.getByQuery(q))))
                 .orElseGet(() -> mapper.listCacheToListCacheDto(service.getAll()));
     }
 
     @PostMapping("/generate")
+    @ResponseStatus(HttpStatus.CREATED)
     public CacheDto createCache(@RequestBody GenerateCacheRequestDto dto) {
-        return mapper.cacheToCacheDto(service.createGif(dto).orElse(new Cache()));
+        return mapper.cacheToCacheDto(service.createGif(dto));
     }
 
     @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCache() {
         service.deleteCache();
     }
