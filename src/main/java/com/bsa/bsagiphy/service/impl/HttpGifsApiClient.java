@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Paths;
 
 @Log4j2
-@Component
+@Service
 public class HttpGifsApiClient implements GifsApiClient {
 
     @Value("${api.url}")
@@ -89,6 +89,7 @@ public class HttpGifsApiClient implements GifsApiClient {
         return gif;
     }
 
+    @SneakyThrows
     private void downloadGif(Gif gif) {
         try (InputStream source = new URL(prepareUrlForDownloading(gif.getId())).openStream()) {
             var dest = new File(gif.getPath());
