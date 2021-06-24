@@ -30,17 +30,17 @@ public class UserController {
 
     @GetMapping("/{id}/all")
     public List<CacheDto> getAllFiles(@PathVariable String id) {
-        return mapper.listCacheToListCacheDto(service.getAllPersonalFilesByUserId(id));
+        return mapper.listCacheToListCacheDto(service.getAllGifsById(id));
     }
 
     @GetMapping("/{id}/history")
     public List<UserHistoryDto> getHistory(@PathVariable String id) {
-        return mapper.listUserHistoryToListUserHistoryDto(service.getHistoryByUserId(id));
+        return mapper.listUserHistoryToListUserHistoryDto(service.getHistoryById(id));
     }
 
     @DeleteMapping("/{id}/history/clean")
     public void cleanHistory(@PathVariable String id) {
-        service.cleanHistoryByUserId(id);
+        service.deleteHistoryById(id);
     }
 
     @GetMapping("/{id}/search")
@@ -48,8 +48,8 @@ public class UserController {
                                     @RequestParam String query,
                                     @RequestParam(defaultValue = "false") boolean force) {
         try {
-            return force ? service.searchFileInDiskStorageByQuery(id, query).getPath()
-                            : service.searchGifInCacheMemoryByQuery(id, query).getPath();
+            return force ? service.getGifInStorageByQuery(id, query).getPath()
+                            : service.getGifInCacheByQuery(id, query).getPath();
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "entity not found"
@@ -66,15 +66,15 @@ public class UserController {
     @DeleteMapping("/{id}/reset")
     public void resetUserCache(@PathVariable String id, @RequestParam Optional<String> query) {
         if (query.isPresent()) {
-            service.resetUserCacheByQuery(id, query.get());
+            service.resetCacheByQuery(id, query.get());
         } else {
-            service.resetAllUserCache(id);
+            service.resetAllCache(id);
         }
     }
 
     @DeleteMapping("/{id}/clean")
     public void cleanAllUserData(@PathVariable String id) {
-        service.cleanAllUserData(id);
+        service.deleteAllData(id);
     }
 
 }

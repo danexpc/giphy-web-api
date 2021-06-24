@@ -2,6 +2,7 @@ package com.bsa.bsagiphy.service.impl;
 
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.service.GifsApiClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
@@ -35,8 +36,7 @@ public class HttpGifsApiClient implements GifsApiClient {
     @Value("${resources.location.cache}")
     private String pathToCache;
 
-    @Value("${resources.file-extension}")
-    private String fileExtension;
+    private final String fileExtension = ".gif";
 
     private final HttpClient client;
 
@@ -49,20 +49,18 @@ public class HttpGifsApiClient implements GifsApiClient {
     public Gif getGif(String query) {
         try {
             var response = client.send(buildGetRequest(buildURI(query)), HttpResponse.BodyHandlers.ofString());
+            var gif = parseResponseToGif(response);
 
-            var objectMapper = new ObjectMapper();
-            var id = objectMapper.readTree(response.body()).at("/data/id").toString().replace("\"", "");
+            gif.setName(query);
+            gif.setPath(Paths.get(pathToCache, query, gif.getId() + fileExtension).toString());
 
-            var gif = new Gif(
-                    id, query, Paths.get(pathToCache, query, id + fileExtension).toString());
-
-            log.error(gif.getPath());
             downloadGif(gif);
 
             return gif;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
 
+            //todo
             return null;
         }
     }
@@ -78,6 +76,21 @@ public class HttpGifsApiClient implements GifsApiClient {
                 gifsApiKey,
                 query
         ));
+    }
+
+    private Gif parseResponseToGif(HttpResponse<String> response) {
+        var objectMapper = new ObjectMapper();
+        String id = null;
+        try {
+            id = objectMapper.readTree(response.body()).at("/data/id").toString().replace("\"", "");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        var gif = new Gif();
+        gif.setId(id);
+
+        return gif;
     }
 
     private void downloadGif(Gif gif) {

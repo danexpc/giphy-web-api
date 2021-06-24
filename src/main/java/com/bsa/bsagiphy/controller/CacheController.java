@@ -28,13 +28,13 @@ public class CacheController {
     @GetMapping
     public List<CacheDto> queryCacheCollection(@RequestParam(required = false) Optional<String> query) {
         return query.map(q ->
-                List.of(mapper.cacheToCacheDto(service.getCacheByQuery(q).orElse(new Cache()))))
-                .orElseGet(() -> mapper.listCacheToListCacheDto(service.getAllCache()));
+                List.of(mapper.cacheToCacheDto(service.getByQuery(q).orElse(new Cache()))))
+                .orElseGet(() -> mapper.listCacheToListCacheDto(service.getAll()));
     }
 
     @PostMapping("/generate")
     public CacheDto createCache(@RequestBody GenerateCacheRequestDto dto) {
-        return mapper.cacheToCacheDto(service.createGifInCache(dto).orElse(new Cache()));
+        return mapper.cacheToCacheDto(service.createGif(dto).orElse(new Cache()));
     }
 
     @DeleteMapping

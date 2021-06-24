@@ -15,7 +15,7 @@ public class CacheMemoryRepository implements GifRepository {
 
     private static final Map<String, List<Cache>> cache = new HashMap<>();
 
-    public Optional<Gif> getFileByQuery(String userId, String query) {
+    public Optional<Gif> getGifByQuery(String userId, String query) {
         var userCache = cache.get(userId);
         if (userCache == null)
             return Optional.empty();

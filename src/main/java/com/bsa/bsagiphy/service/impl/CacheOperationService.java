@@ -22,17 +22,17 @@ public class CacheOperationService {
         this.repository = repository;
     }
 
-    public Optional<Cache> getCacheByQuery(String query) {
+    public Optional<Cache> getByQuery(String query) {
         return repository.getCacheByQuery(query);
     }
 
-    public List<Cache> getAllCache() {
+    public List<Cache> getAll() {
         return repository.getCache();
     }
 
-    public Optional<Cache> createGifInCache(GenerateCacheRequestDto dto) {
+    public Optional<Cache> createGif(GenerateCacheRequestDto dto) {
         httpGifsApiClient.getGif(dto.query);
-        return getCacheByQuery(dto.query);
+        return getByQuery(dto.query);
     }
 
     public void deleteCache() {

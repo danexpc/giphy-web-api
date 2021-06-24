@@ -40,8 +40,7 @@ public class DiskStorageRepository implements GifRepository {
     @Value("${resources.location.users.history.separator}")
     private String historyRecordSeparator;
 
-    @Value("${resources.file-extension}")
-    private String fileExtension;
+    private static final String fileExtension = ".gif";
 
     public List<Cache> getCache() {
         var file = new File(pathToCache);
@@ -59,21 +58,7 @@ public class DiskStorageRepository implements GifRepository {
                     Objects.requireNonNull(maybeDir.get().listFiles())).map(File::getPath).collect(Collectors.toList());
             return Optional.of(new Cache(maybeDir.get().getName(), paths));
         }
-
         return Optional.empty();
-    }
-
-    public void deleteCache() {
-        deleteAllContentInDir(new File(pathToCache));
-    }
-
-    public List<Gif> getFiles() {
-        var files = getAllFilesInDir(new File(pathToCache));
-
-        return files.stream().map(file ->
-                new Gif(file.getName().replace(fileExtension, ""),
-                        file.getName().replace(fileExtension, ""),
-                        file.getPath())).collect(Collectors.toList());
     }
 
     public List<Cache> getCacheByUserId(String userId) {
@@ -83,18 +68,38 @@ public class DiskStorageRepository implements GifRepository {
         return getCacheFromDir(dir);
     }
 
-    public Optional<Gif> getFileByQuery(String userId, String query) {
+    public void deleteCache() {
+        deleteAllContentInDir(new File(pathToCache));
+    }
+
+    public List<Gif> getGifs() {
+        var files = getAllFilesInDir(new File(pathToCache));
+
+        return files.stream().map(file ->
+                new Gif(file.getName().replace(fileExtension, ""),
+                        file.getName().replace(fileExtension, ""),
+                        file.getPath())).collect(Collectors.toList());
+    }
+
+    public Optional<Gif> getGifByQuery(String userId, String query) {
         var sourceDir = Path.of(pathToUsersStorage + userId + File.separator + query);
         Optional<File> maybeFile = getRandomFileFromDirectory(sourceDir);
         if (maybeFile.isPresent()) {
             var file = maybeFile.get();
             return Optional.of(new Gif(file.getName(), file.getName(), file.getPath()));
         }
-
         return Optional.empty();
     }
 
-    public Gif saveFileToUserStorage(String userId, String query, Gif gif) throws IOException {
+    public Optional<Gif> getGifFromStorageByQuery(String query) {
+        var file = getRandomFileFromDirectory(Path.of(pathToCache + query));
+        return file.map(value -> new Gif(
+                value.getName().replace(fileExtension, ""),
+                value.getName().replace(fileExtension, ""),
+                value.getPath()));
+    }
+
+    public Gif saveGifToUserStorage(String userId, String query, Gif gif) throws IOException {
         var newPath = Path.of(pathToUsersStorage, userId, query, gif.getId() + fileExtension).toString();
         log.error(newPath);
         FileUtils.copyFile(new File(gif.getPath()), new File(newPath));
@@ -112,7 +117,7 @@ public class DiskStorageRepository implements GifRepository {
         return histories;
     }
 
-    public void updateHistory(String userId, String query, Gif gif) throws IOException {
+    public void updateHistoryByUserId(String userId, String query, Gif gif) throws IOException {
         FileUtils.writeStringToFile(
                 Paths.get(pathToUsersStorage, userId, historyFileName).toFile(),
                 buildNewHistoryRecord(query, gif), Charset.defaultCharset(), true);
@@ -124,7 +129,14 @@ public class DiskStorageRepository implements GifRepository {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
 
+    public void deleteUserStorage(String userId) {
+        try {
+            FileUtils.deleteDirectory(Paths.get(pathToUsersStorage, userId).toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private String buildNewHistoryRecord(String query, Gif gif) {
@@ -143,7 +155,6 @@ public class DiskStorageRepository implements GifRepository {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return new UserHistory(date, fields[1], fields[2]);
     }
 
@@ -160,25 +171,7 @@ public class DiskStorageRepository implements GifRepository {
                 }
             }
         }
-
         return cache;
-    }
-
-    public Optional<Gif> getFileFromStorage(String query) {
-        var file = getRandomFileFromDirectory(Path.of(pathToCache + query));
-        return file.map(value -> new Gif(
-                value.getName().replace(fileExtension, ""),
-                value.getName().replace(fileExtension, ""),
-                value.getPath()));
-
-    }
-
-    public void deleteUserStorage(String userId) {
-        try {
-            FileUtils.deleteDirectory(Paths.get(pathToUsersStorage, userId).toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void deleteFileContent(String filename) throws FileNotFoundException {
@@ -198,7 +191,7 @@ public class DiskStorageRepository implements GifRepository {
         return files;
     }
 
-    public void deleteAllContentInDir(File dir) {
+    private void deleteAllContentInDir(File dir) {
         var dirs = dir.listFiles();
         if (dirs != null) {
             for (File file : dirs) {
@@ -211,7 +204,7 @@ public class DiskStorageRepository implements GifRepository {
         }
     }
 
-    public Optional<File> getRandomFileFromDirectory(Path path) {
+    private Optional<File> getRandomFileFromDirectory(Path path) {
         if (Files.isDirectory(path)) {
             File[] files = path.toFile().listFiles();
             if (files != null) {

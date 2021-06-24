@@ -10,10 +10,8 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class UserOperationService {
@@ -27,20 +25,20 @@ public class UserOperationService {
     @Autowired
     private HttpGifsApiClient apiClient;
 
-    public List<Cache> getAllPersonalFilesByUserId(String userId) {
+    public List<Cache> getAllGifsById(String userId) {
         return storageRepository.getCacheByUserId(userId);
     }
 
-    public List<UserHistory> getHistoryByUserId(String userId) {
+    public List<UserHistory> getHistoryById(String userId) {
         return storageRepository.getHistoryByUserId(userId);
     }
 
-    public void cleanHistoryByUserId(String userId) {
+    public void deleteHistoryById(String userId) {
         storageRepository.deleteHistoryByUserId(userId);
     }
 
-    public Gif searchFileInDiskStorageByQuery(String userId, String query) {
-        var maybeGif = storageRepository.getFileByQuery(userId, query);
+    public Gif getGifInStorageByQuery(String userId, String query) {
+        var maybeGif = storageRepository.getGifByQuery(userId, query);
         maybeGif.ifPresent(gif -> memoryRepository.updateCache(userId, query, gif));
 
         if (maybeGif.isPresent())
@@ -49,43 +47,44 @@ public class UserOperationService {
         throw new NoSuchElementException();
     }
 
-    public Gif searchGifInCacheMemoryByQuery(String userId, String query) {
-        var maybeGif = memoryRepository.getFileByQuery(userId, query);
+    public Gif getGifInCacheByQuery(String userId, String query) {
+        var maybeGif = memoryRepository.getGifByQuery(userId, query);
 
-        return maybeGif.orElseGet(() -> searchFileInDiskStorageByQuery(userId, query));
+        return maybeGif.orElseGet(() -> getGifInStorageByQuery(userId, query));
     }
 
     @SneakyThrows
     public String createGif(String userId, GenerateGifForUserDto dto) {
         if (dto.getForce()) {
             var gif = apiClient.getGif(dto.getQuery());
+
             memoryRepository.updateCache(userId, dto.getQuery(), gif);
-            storageRepository.updateHistory(userId, dto.getQuery(), gif);
+            storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif);
             return gif.getPath();
         }
 
-        var maybeGif = storageRepository.getFileFromStorage(dto.getQuery());
+        var maybeGif = storageRepository.getGifFromStorageByQuery(dto.getQuery());
         Gif gif;
         if (maybeGif.isPresent()) {
-            gif = storageRepository.saveFileToUserStorage(userId, dto.getQuery(), maybeGif.get());
+            gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), maybeGif.get());
         } else {
             gif = apiClient.getGif(dto.getQuery());
-            gif = storageRepository.saveFileToUserStorage(userId, dto.getQuery(), gif);
+            gif = storageRepository.saveGifToUserStorage(userId, dto.getQuery(), gif);
         }
         memoryRepository.updateCache(userId, dto.getQuery(), gif);
-        storageRepository.updateHistory(userId, dto.getQuery(), gif);
+        storageRepository.updateHistoryByUserId(userId, dto.getQuery(), gif);
         return gif.getPath();
     }
 
-    public void resetUserCacheByQuery(String userId, String query) {
+    public void resetCacheByQuery(String userId, String query) {
         memoryRepository.deleteCacheByQuery(userId, query);
     }
 
-    public void resetAllUserCache(String userId) {
+    public void resetAllCache(String userId) {
         memoryRepository.deleteCache(userId);
     }
 
-    public void cleanAllUserData(String userId) {
+    public void deleteAllData(String userId) {
         memoryRepository.deleteCache(userId);
         storageRepository.deleteUserStorage(userId);
     }

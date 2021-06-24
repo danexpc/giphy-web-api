@@ -22,6 +22,6 @@ public class GifOperationService {
     }
 
     public List<String> getAll() {
-        return repository.getFiles().stream().map(Gif::getPath).collect(Collectors.toList());
+        return repository.getGifs().stream().map(Gif::getPath).collect(Collectors.toList());
     }
 }
