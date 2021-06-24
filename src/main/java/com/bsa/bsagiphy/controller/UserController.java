@@ -2,12 +2,11 @@ package com.bsa.bsagiphy.controller;
 
 import com.bsa.bsagiphy.dto.CacheDto;
 import com.bsa.bsagiphy.dto.GenerateGifForUserDto;
-import com.bsa.bsagiphy.dto.GifResponseDto;
 import com.bsa.bsagiphy.dto.UserHistoryDto;
 import com.bsa.bsagiphy.mapper.UserCacheMapper;
 import com.bsa.bsagiphy.service.impl.UserOperationService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,11 +20,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserOperationService service;
-    private final UserCacheMapper mapper = Mappers.getMapper(UserCacheMapper.class);
+    private final UserCacheMapper mapper;
 
     @Autowired
-    public UserController(UserOperationService service) {
+    public UserController(UserOperationService service, @Qualifier("userMapper") UserCacheMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping("/{id}/all")

@@ -5,8 +5,8 @@ import com.bsa.bsagiphy.dto.GenerateCacheRequestDto;
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.mapper.CacheMapper;
 import com.bsa.bsagiphy.service.impl.CacheOperationService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,11 +17,12 @@ import java.util.Optional;
 public class CacheController {
 
     private final CacheOperationService service;
-    private final CacheMapper mapper = Mappers.getMapper(CacheMapper.class);
+    private final CacheMapper mapper;
 
     @Autowired
-    public CacheController(CacheOperationService service) {
+    public CacheController(CacheOperationService service, @Qualifier("cacheMapper") CacheMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping
