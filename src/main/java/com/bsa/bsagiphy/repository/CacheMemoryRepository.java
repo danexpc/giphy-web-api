@@ -2,7 +2,6 @@ package com.bsa.bsagiphy.repository;
 
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
-import com.bsa.bsagiphy.repository.GifRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Repository
-public class CacheMemoryRepository implements GifRepository {
+public class CacheMemoryRepository {
 
     private static final Map<String, List<Cache>> cache = new HashMap<>();
 

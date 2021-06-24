@@ -3,7 +3,7 @@ package com.bsa.bsagiphy.repository;
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;
 import com.bsa.bsagiphy.entity.UserHistory;
-import com.bsa.bsagiphy.repository.GifRepository;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Repository
-public class DiskStorageRepository implements GifRepository {
+public class DiskStorageRepository {
 
     @Value("${resources.location.cache}")
     private String pathToCache;
@@ -106,14 +105,13 @@ public class DiskStorageRepository implements GifRepository {
         return new Gif(gif.getId(), gif.getName(), newPath);
     }
 
+    @SneakyThrows
     public List<UserHistory> getHistoryByUserId(String userId) {
         List<UserHistory> histories = new ArrayList<>();
-        try {
-            FileUtils.readLines(Paths.get(pathToUsersStorage, userId, historyFileName).toFile(), Charset.defaultCharset())
-                    .forEach(rec -> histories.add(parseHistoryRecord(rec)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        FileUtils.readLines(Paths.get(pathToUsersStorage, userId, historyFileName).toFile(), Charset.defaultCharset())
+                .forEach(rec -> histories.add(parseHistoryRecord(rec)));
+
         return histories;
     }
 
@@ -123,20 +121,14 @@ public class DiskStorageRepository implements GifRepository {
                 buildNewHistoryRecord(query, gif), Charset.defaultCharset(), true);
     }
 
+    @SneakyThrows
     public void deleteHistoryByUserId(String userId) {
-        try {
-            deleteFileContent(pathToUsersStorage + userId + File.separator + historyFileName);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        deleteFileContent(pathToUsersStorage + userId + File.separator + historyFileName);
     }
 
+    @SneakyThrows
     public void deleteUserStorage(String userId) {
-        try {
-            FileUtils.deleteDirectory(Paths.get(pathToUsersStorage, userId).toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileUtils.deleteDirectory(Paths.get(pathToUsersStorage, userId).toFile());
     }
 
     private String buildNewHistoryRecord(String query, Gif gif) {
@@ -145,16 +137,14 @@ public class DiskStorageRepository implements GifRepository {
         return todayDate + historyRecordSeparator + query + historyRecordSeparator + gif.getPath() + "\n";
     }
 
+    @SneakyThrows
     private UserHistory parseHistoryRecord(String historyRecord) {
         var fields = historyRecord.split(historyRecordSeparator);
         var formatter = new SimpleDateFormat("MM-dd-yyyy");
-        var date = new Date();
 
-        try {
-            date = formatter.parse(fields[0]);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date date;
+        date = formatter.parse(fields[0]);
+
         return new UserHistory(date, fields[1], fields[2]);
     }
 
@@ -191,15 +181,12 @@ public class DiskStorageRepository implements GifRepository {
         return files;
     }
 
+    @SneakyThrows
     private void deleteAllContentInDir(File dir) {
         var dirs = dir.listFiles();
         if (dirs != null) {
             for (File file : dirs) {
-                try {
-                    FileUtils.delete(file);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                FileUtils.delete(file);
             }
         }
     }
