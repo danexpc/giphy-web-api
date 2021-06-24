@@ -17,8 +17,8 @@ public class LoggingAspect {
 
     @AfterThrowing(pointcut = "springServicePointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-        log.error("Exception: {} in {}.{}() with cause = {}",e.getMessage(),
+        log.error("Exception: '{}' in {}.{}() with cause = {}\n Displaying stack trace:\n{}",e.getMessage(),
                 joinPoint.getSignature().getDeclaringTypeName(),
-                joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL");
+                joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL", e.getStackTrace());
     }
 }
