@@ -1,4 +1,4 @@
-package com.bsa.bsagiphy.repository.impl;
+package com.bsa.bsagiphy.repository;
 
 import com.bsa.bsagiphy.entity.Cache;
 import com.bsa.bsagiphy.entity.Gif;

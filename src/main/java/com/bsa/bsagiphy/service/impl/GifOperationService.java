@@ -1,7 +1,7 @@
 package com.bsa.bsagiphy.service.impl;
 
 import com.bsa.bsagiphy.entity.Gif;
-import com.bsa.bsagiphy.repository.impl.DiskStorageRepository;
+import com.bsa.bsagiphy.repository.DiskStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
