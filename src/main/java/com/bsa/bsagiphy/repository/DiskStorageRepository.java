@@ -186,7 +186,7 @@ public class DiskStorageRepository {
         var dirs = dir.listFiles();
         if (dirs != null) {
             for (File file : dirs) {
-                FileUtils.delete(file);
+                FileUtils.deleteDirectory(file);
             }
         }
     }
