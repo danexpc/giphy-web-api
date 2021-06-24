@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -103,10 +102,9 @@ public class DiskStorageRepository implements GifRepository {
 
     public List<UserHistory> getHistoryByUserId(String userId) {
         List<UserHistory> histories = new ArrayList<>();
-        try (var reader = new Scanner(new File(pathToUsersStorage + userId + File.separator + historyFileName))) {
-            while (reader.hasNextLine()) {
-                histories.add(parseHistoryRecord(reader.nextLine()));
-            }
+        try {
+            FileUtils.readLines(Paths.get(pathToUsersStorage, userId, historyFileName).toFile(), Charset.defaultCharset())
+                    .forEach(rec -> histories.add(parseHistoryRecord(rec)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,10 +112,9 @@ public class DiskStorageRepository implements GifRepository {
     }
 
     public void updateHistory(String userId, String query, Gif gif) throws IOException {
-        try (var fileWriter = new FileWriter(pathToUsersStorage + userId + File.separator + historyFileName);
-             var printWriter = new PrintWriter(fileWriter)) {
-            printWriter.write(buildNewHistoryRecord(query, gif));
-        }
+        FileUtils.writeStringToFile(
+                Paths.get(pathToUsersStorage, userId, historyFileName).toFile(),
+                buildNewHistoryRecord(query, gif), Charset.defaultCharset(), true);
     }
 
     public void deleteHistoryByUserId(String userId) {
@@ -127,7 +124,7 @@ public class DiskStorageRepository implements GifRepository {
     private String buildNewHistoryRecord(String query, Gif gif) {
         var dtf = DateTimeFormatter.ofPattern("MM-dd-yyyy");
         String todayDate = LocalDate.now().format(dtf);
-        return todayDate + historyRecordSeparator + query + historyRecordSeparator + gif.getPath();
+        return todayDate + historyRecordSeparator + query + historyRecordSeparator + gif.getPath() + "\n";
     }
 
     private UserHistory parseHistoryRecord(String historyRecord) {
