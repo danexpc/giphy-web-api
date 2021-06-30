@@ -33,7 +33,6 @@ public class CacheMemoryRepository {
     }
 
     public void updateCache(String userId, String query, Gif gif) {
-        log.error(cache);
         var userCache = cache.getOrDefault(userId, new ArrayList<>());
         var maybeCache = userCache.stream().filter(c -> Objects.equals(c.getQuery(), query)).findFirst();
         if (maybeCache.isPresent()) {
@@ -59,13 +58,10 @@ public class CacheMemoryRepository {
     }
 
     public void deleteCache(String id) {
-        log.error("Before " + cache);
         cache.put(id, new ArrayList<>());
-        log.error("After " + cache);
     }
 
     public void deleteCacheByQuery(String id, String query) {
-        log.error("Before " + cache);
         var userCache = cache.getOrDefault(id, new ArrayList<>());
         if (userCache.isEmpty()) {
             return;
@@ -75,6 +71,5 @@ public class CacheMemoryRepository {
                 .filter(c -> !c.getQuery().equals(query)).collect(Collectors.toList());
 
         cache.put(id, filteredCache);
-        log.error("After " + cache);
     }
 }
