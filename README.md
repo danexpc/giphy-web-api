@@ -1,4 +1,4 @@
-# giphy-web-api
+# Giphy Web API
 WebAPI application that allows to generate and save personalized GIFs.
 
 
